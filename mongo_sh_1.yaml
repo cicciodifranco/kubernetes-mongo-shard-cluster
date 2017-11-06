@@ -1,0 +1,131 @@
+# Mongo shard replica set 1 node 1
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongosh1-1
+  labels:
+    run: mongosh1-1
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    run: mongosh1-1
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mongosh1-1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongosh1-1
+        run: mongosh1-1
+    spec:
+      restartPolicy: Always
+      hostname: mongosh1-1
+      containers:
+      - image: mongo:latest
+        name: mongosh1-1
+        ports:
+        - name: mongosh1-1
+          containerPort: 27017
+        volumeMounts:
+            - name: mongosh1-1
+              mountPath: /data/db
+        command: ["mongod"]
+        args: ["--noprealloc", "--smallfiles", "--replSet", "rs1", "--dbpath","/data/db", "--noauth", "--port", "27017"]
+      volumes:
+        - name: mongosh1-1
+          #persistentVolumeClaim:
+          #  claimName: mongosh1-1
+---
+# Mongo shard replica set 1 node 2
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongosh1-2
+  labels:
+    run: mongosh1-2
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    run: mongosh1-2
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mongosh1-2
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongosh1-2
+        run: mongosh1-2
+    spec:
+      restartPolicy: Always
+      hostname: mongosh1-2
+      containers:
+      - image: mongo:latest
+        name: mongosh1-2
+        ports:
+        - name: mongosh1-2
+          containerPort: 27017
+        volumeMounts:
+            - name: mongosh1-2
+              mountPath: /data/db
+        command: ["mongod"]
+        args: ["--noprealloc", "--smallfiles", "--replSet", "rs1", "--dbpath","/data/db", "--noauth", "--port", "27017"]
+      volumes:
+        - name: mongosh1-2
+          #persistentVolumeClaim:
+          #  claimName: mongosh1-2
+---
+# Mongo shard replica set 1 node 1
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongosh1-3
+  labels:
+    run: mongosh1-3
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    run: mongosh1-3
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mongosh1-3
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongosh1-3
+        run: mongosh1-3
+    spec:
+      restartPolicy: Always
+      hostname: mongosh1-3
+      containers:
+      - image: mongo:latest
+        name: mongosh1-3
+        ports:
+        - name: mongosh1-3
+          containerPort: 27017
+        volumeMounts:
+            - name: mongosh1-3
+              mountPath: /data/db
+        command: ["mongod"]
+        args: ["--noprealloc", "--smallfiles", "--replSet", "rs1", "--dbpath","/data/db", "--noauth", "--port", "27017"]
+      volumes:
+        - name: mongosh1-3
+          #persistentVolumeClaim:
+          #  claimName: mongosh1-3

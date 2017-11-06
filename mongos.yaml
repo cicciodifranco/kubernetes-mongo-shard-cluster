@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongos1
+  labels:
+    run: mongos1
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    run: mongos1
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mongos1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongos1
+        run: mongos1
+    spec:
+      restartPolicy: Always
+      hostname: mongos1
+      containers:
+      - image: mongo:latest
+        name: mongos1
+        ports:
+        - name: mongos1
+          containerPort: 27017
+        volumeMounts:
+            - name: mongos1
+              mountPath: /data/db
+        command: ["mongos"]
+        args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019"]
+      volumes:
+        - name: mongos1
+#          persistentVolumeClaim:
+#            claimName: mongos1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongos2
+  labels:
+    run: mongos2
+spec:
+  ports:
+  - port: 27017
+    protocol: TCP
+  selector:
+    run: mongos2
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mongos2
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongos2
+        run: mongos2
+    spec:
+      restartPolicy: Always
+      hostname: mongos1
+      containers:
+      - image: mongo:latest
+        name: mongos2
+        ports:
+        - name: mongos2
+          containerPort: 27017
+        volumeMounts:
+            - name: mongos2
+              mountPath: /data/db
+        command: ["mongos"]
+        args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019"]
+      volumes:
+        - name: mongos2
+#          persistentVolumeClaim:
+#            claimName: mongos2
