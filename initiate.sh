@@ -1,5 +1,5 @@
 #!/bin/bash
-#Exposing services
+
 source config
 
 #set -e
@@ -89,56 +89,3 @@ for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
 done
 
 echo "All done!!!"
-
-exit
-
-
-
-
-
-
-for ((rs=1; rs<=$CONFIG_REPLICA_SET; rs++)) do
-    echo -e "\n\n---------------------------------------------------"
-    echo "Initializing mongocfg$rs"
-
-    POD_NAME=$(kubectl get pods | grep "mongocfg1" | awk '{print $1;}')
-    #Retriving pod name
-    echo "Pod Name: $POD_NAME"
-
-    #Building cmd
-    CMD="rs.initiate({ _id : \"cfgrs\", configsvr: true, members: [{ _id : 0, host : \"mongocfg1\" },{ _id : 1, host : \"mongocfg2\" },{ _id : 2, host : \"mongocfg3\" }]})"
-    for ((member=2; member <=$NODE_PER_REPLICA-1;member++)) do
-        CMD="$CMD rs.add(\"mongocfg$rs-$member\");"
-    done
-    CMD="$CMD rs.status();"
-    echo $CMD
-
-    #Executing cmd inside pod
-    kubectl exec -it $POD_NAME -- bash -c "echo '$CMD' | mongo"
-done
-exit
-#Initializating shard nodes
-for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
-    echo -e "\n\n---------------------------------------------------"
-    echo "Initializing mongosh$rs"
-
-    #Retriving pod name
-    POD_NAME=$(kubectl get pods | grep "mongosh$rs-1" | awk '{print $1;}')
-    echo "Pod Name: $POD_NAME"
-
-    #Building cmd
-    CMD="rs.initiate(); sleep(1000);"
-    for ((member=2; member <=$NODE_PER_REPLICA;member++)) do
-        CMD="$CMD rs.add(\"mongosh$rs-$member\");"
-    done
-    CMD="$CMD rs.status();"
-    echo $CMD
-
-    #Executing cmd inside pod
-    kubectl exec -it $POD_NAME -- bash -c "echo '$CMD' | mongo"
-done
-
-
-
-
-rs.initiate({ _id : "cfgrs1", configsvr: true, members: [{ _id : 0, host : "mongocfg1-1" },{ _id : 1, host : "mongocfg1-2" },{ _id : 2, host : "mongocfg1-3" }]})
