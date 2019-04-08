@@ -36,7 +36,7 @@ spec:
             - name: mongosh4-1
               mountPath: /data/db
         command: ["mongod"]
-        args: ["--noprealloc", "--smallfiles", "--replSet", "rs4", "--dbpath","/data/db", "--noauth", "--port", "27017"]
+        args: ["--noprealloc", "--smallfiles", "--replSet", "rs4", "--dbpath","/data/db", "--noauth", "--port", "27017", "--bind_ip_all"]
       volumes:
         - name: mongosh4-1
           #persistentVolumeClaim:
@@ -80,7 +80,7 @@ spec:
             - name: mongosh4-2
               mountPath: /data/db
         command: ["mongod"]
-        args: ["--noprealloc", "--smallfiles", "--replSet", "rs4", "--dbpath","/data/db", "--noauth", "--port", "27017"]
+        args: ["--noprealloc", "--smallfiles", "--replSet", "rs4", "--dbpath","/data/db", "--noauth", "--port", "27017", "--bind_ip_all"]
       volumes:
         - name: mongosh4-2
           #persistentVolumeClaim:
@@ -124,7 +124,7 @@ spec:
             - name: mongosh4-3
               mountPath: /data/db
         command: ["mongod"]
-        args: ["--noprealloc", "--smallfiles", "--replSet", "rs4", "--dbpath","/data/db", "--noauth", "--port", "27017"]
+        args: ["--noprealloc", "--smallfiles", "--replSet", "rs4", "--dbpath","/data/db", "--noauth", "--port", "27017", "--bind_ip_all"]
       volumes:
         - name: mongosh4-3
           #persistentVolumeClaim:

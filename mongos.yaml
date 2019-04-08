@@ -35,7 +35,7 @@ spec:
             - name: mongos1
               mountPath: /data/db
         command: ["mongos"]
-        args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019"]
+        args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019", "--bind_ip_all"]
       volumes:
         - name: mongos1
 #          persistentVolumeClaim:
@@ -78,7 +78,7 @@ spec:
             - name: mongos2
               mountPath: /data/db
         command: ["mongos"]
-        args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019"]
+        args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019", "--bind_ip_all"]
       volumes:
         - name: mongos2
 #          persistentVolumeClaim:
