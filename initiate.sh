@@ -4,9 +4,10 @@ source config
 
 #set -e
 
+kubectl apply -f mongo-secrets.yaml
 
 #Creating config nodes
-kubectl create -f  mongo_config.yaml
+kubectl apply -f  mongo_config.yaml
 
 #Waiting for containers
 echo "Waiting config containers"
@@ -18,18 +19,21 @@ do
   kubectl get pods | grep "mongocfg" | grep "ContainerCreating"
 done
 
+sleep 10
 
 #Initializating configuration nodes
 POD_NAME=$(kubectl get pods | grep "mongocfg1" | awk '{print $1;}')
 echo "Initializating config replica set... connecting to: $POD_NAME"
 CMD='rs.initiate({ _id : "cfgrs", configsvr: true, members: [{ _id : 0, host : "mongocfg1:27019" },{ _id : 1, host : "mongocfg2:27019" },{ _id : 2, host : "mongocfg3:27019" }]})'
-kubectl exec -it $POD_NAME -- bash -c "mongo --port 27019 --eval '$CMD'"
+kubectl exec -it $POD_NAME -- bash -c "mongosh --port 27019 --eval '$CMD'"
 
-
+sleep 10
 
 #Creating shard nodes
 for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
-    kubectl create -f  mongo_sh_$rs.yaml
+  kubectl apply -f  mongo_sh_$rs.yaml
+
+  sleep 10
 done
 
 #Waiting for containers
@@ -43,26 +47,27 @@ do
   kubectl get pods | grep "mongosh" | grep "ContainerCreating"
 done
 
-
+sleep 10
 
 #Initializating shard nodes
 for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
-    echo -e "\n\n---------------------------------------------------"
-    echo "Initializing mongosh$rs"
+  echo -e "\n\n---------------------------------------------------"
+  echo "Initializing mongosh$rs"
 
-    #Retriving pod name
-    POD_NAME=$(kubectl get pods | grep "mongosh$rs-1" | awk '{print $1;}')
-    echo "Pod Name: $POD_NAME"
-    CMD="rs.initiate({ _id : \"rs$rs\", members: [{ _id : 0, host : \"mongosh$rs-1:27017\" },{ _id : 1, host : \"mongosh$rs-2:27017\" },{ _id : 2, host : \"mongosh$rs-3:27017\" }]})"
-    #Executing cmd inside pod
-    echo $CMD
-    kubectl exec -it $POD_NAME -- bash -c "mongo --eval '$CMD'"
+  #Retriving pod name
+  POD_NAME=$(kubectl get pods | grep "mongosh$rs-1" | awk '{print $1;}')
+  echo "Pod Name: $POD_NAME"
+  CMD="rs.initiate({ _id : \"rs$rs\", members: [{ _id : 0, host : \"mongosh$rs-1:27017\" },{ _id : 1, host : \"mongosh$rs-2:27017\" },{ _id : 2, host : \"mongosh$rs-3:27017\" }]})"
+  #Executing cmd inside pod
+  echo $CMD
+  kubectl exec -it $POD_NAME -- bash -c "mongosh --eval '$CMD'"
 
+  sleep 10
 done
 
 
 #Initializing routers
-kubectl create -f mongos.yaml
+kubectl apply -f mongos.yaml
 echo "Waiting router containers"
 kubectl get pods | grep "mongos[0-9]" | grep "ContainerCreating"
 while [ $? -eq 0 ]
@@ -72,20 +77,22 @@ do
   kubectl get pods | grep "mongos[0-9]" | grep "ContainerCreating"
 done
 
+sleep 10
 
 #Adding shard to cluster
 #Retriving pod name
 POD_NAME=$(kubectl get pods | grep "mongos1" | awk '{print $1;}')
 for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
-    echo -e "\n\n---------------------------------------------------"
-    echo "Adding rs$rs to cluster"
-    echo "Pod Name: $POD_NAME"
+  echo -e "\n\n---------------------------------------------------"
+  echo "Adding rs$rs to cluster"
+  echo "Pod Name: $POD_NAME"
 
-    CMD="sh.addShard(\"rs$rs/mongosh$rs-1:27017\")"
-    #Executing cmd inside pod
-    echo $CMD
-    kubectl exec -it $POD_NAME -- bash -c "mongo --eval '$CMD'"
+  CMD="sh.addShard(\"rs$rs/mongosh$rs-1:27017\")"
+  #Executing cmd inside pod
+  echo $CMD
+  kubectl exec -it $POD_NAME -- bash -c "mongosh --eval '$CMD'"
 
+  sleep 10
 done
 
 echo "All done!!!"

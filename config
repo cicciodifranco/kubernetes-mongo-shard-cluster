@@ -1,5 +1,5 @@
 #!/bin/bash
 #Main configuration 
 NODE_PER_REPLICA=3
-SHARD_REPLICA_SET=4
+SHARD_REPLICA_SET=2
 ROUTER_NODES=2
