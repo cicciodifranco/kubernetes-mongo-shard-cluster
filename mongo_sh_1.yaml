@@ -1,4 +1,28 @@
-# Mongo shard replica set 1 node 1
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongosh1-1
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mongodb/mongosh1-1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongosh1-1
+spec:
+  resources:
+    requests:
+      storage: 2Gi
+  accessModes:
+    - ReadWriteOnce # only allow one node can be read and write
+  storageClassName: ""
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,8 +31,8 @@ metadata:
     run: mongosh1-1
 spec:
   ports:
-  - port: 27017
-    protocol: TCP
+    - port: 27017
+      protocol: TCP
   selector:
     run: mongosh1-1
 ---
@@ -31,37 +55,51 @@ spec:
       restartPolicy: Always
       hostname: mongosh1-1
       containers:
-      - image: mongo:6.0.2
-        name: mongosh1-1
-        ports:
-        - name: mongosh1-1
-          containerPort: 27017
-        env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secrets
-              key: username
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secrets
-              key: password
-        volumeMounts:
-        - name: mongosh1-1
-          mountPath: /data/db
-        command: ["mongod"]
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        args: ["--shardsvr", "--replSet", "rs1", "--dbpath","/data/db", "--noauth", "--port", "27017", "--bind_ip_all"]
+        - image: mongo:6.0.2
+          name: mongosh1-1
+          ports:
+            - name: mongosh1-1
+              containerPort: 27017
+          volumeMounts:
+            - name: mongosh1-1
+              mountPath: /data/db
+          command: ["mongod"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--bind_ip_all"]
       volumes:
-      - name: mongosh1-1
-        persistentVolumeClaim:
-          claimName: mongosh1-1
+        - name: mongosh1-1
+          persistentVolumeClaim:
+            claimName: mongosh1-1
+
 ---
-# Mongo shard replica set 1 node 2
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongosh1-2
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mongodb/mongosh1-2
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongosh1-2
+spec:
+  resources:
+    requests:
+      storage: 2Gi
+  accessModes:
+    - ReadWriteOnce # only allow one node can be read and write
+  storageClassName: ""
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -70,8 +108,8 @@ metadata:
     run: mongosh1-2
 spec:
   ports:
-  - port: 27017
-    protocol: TCP
+    - port: 27017
+      protocol: TCP
   selector:
     run: mongosh1-2
 ---
@@ -94,37 +132,51 @@ spec:
       restartPolicy: Always
       hostname: mongosh1-2
       containers:
-      - image: mongo:6.0.2
-        name: mongosh1-2
-        ports:
-        - name: mongosh1-2
-          containerPort: 27017
-        env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secrets
-              key: username
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secrets
-              key: password
-        volumeMounts:
-        - name: mongosh1-2
-          mountPath: /data/db
-        command: ["mongod"]
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        args: ["--shardsvr", "--replSet", "rs1", "--dbpath","/data/db", "--noauth", "--port", "27017", "--bind_ip_all"]
+        - image: mongo:6.0.2
+          name: mongosh1-2
+          ports:
+            - name: mongosh1-2
+              containerPort: 27017
+          volumeMounts:
+            - name: mongosh1-2
+              mountPath: /data/db
+          command: ["mongod"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--bind_ip_all"]
       volumes:
-      - name: mongosh1-2
-        persistentVolumeClaim:
-          claimName: mongosh1-2
+        - name: mongosh1-2
+          persistentVolumeClaim:
+            claimName: mongosh1-2
+
 ---
-# Mongo shard replica set 1 node 3
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongosh1-3
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mongodb/mongosh1-3
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongosh1-3
+spec:
+  resources:
+    requests:
+      storage: 2Gi
+  accessModes:
+    - ReadWriteOnce # only allow one node can be read and write
+  storageClassName: ""
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -133,8 +185,8 @@ metadata:
     run: mongosh1-3
 spec:
   ports:
-  - port: 27017
-    protocol: TCP
+    - port: 27017
+      protocol: TCP
   selector:
     run: mongosh1-3
 ---
@@ -157,32 +209,21 @@ spec:
       restartPolicy: Always
       hostname: mongosh1-3
       containers:
-      - image: mongo:6.0.2
-        name: mongosh1-3
-        ports:
-        - name: mongosh1-3
-          containerPort: 27017
-        env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secrets
-              key: username
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mongo-secrets
-              key: password
-        volumeMounts:
-        - name: mongosh1-3
-          mountPath: /data/db
-        command: ["mongod"]
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        args: ["--shardsvr", "--replSet", "rs1", "--dbpath","/data/db", "--noauth", "--port", "27017", "--bind_ip_all"]
+        - image: mongo:6.0.2
+          name: mongosh1-3
+          ports:
+            - name: mongosh1-3
+              containerPort: 27017
+          volumeMounts:
+            - name: mongosh1-3
+              mountPath: /data/db
+          command: ["mongod"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--bind_ip_all"]
       volumes:
-      - name: mongosh1-3
-        persistentVolumeClaim:
-        claimName: mongosh1-3
+        - name: mongosh1-3
+          persistentVolumeClaim:
+            claimName: mongosh1-3
