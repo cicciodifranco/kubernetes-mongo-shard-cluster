@@ -2,6 +2,8 @@
 
 source config
 
+kubectl apply -f mongodb_pv.yaml
+
 #Creating config nodes
 kubectl apply -f  mongo_config.yaml
 
@@ -122,5 +124,7 @@ for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
 
   sleep 10
 done
+
+kubectl exec -it $(kubectl get pods | grep "mongos1" | awk '{print $1;}') -- bash -c "mongosh --eval 'db.createUser({ user: \"aketoan\", pwd: \"@k3t0@ndotVN\", roles: [ \"root\" ]});'"
 
 echo "All done!!!"

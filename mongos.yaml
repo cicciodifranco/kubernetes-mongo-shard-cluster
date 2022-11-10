@@ -10,6 +10,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mongodb/mongos1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kubernete.worker1
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -62,18 +70,25 @@ spec:
             - name: mongos1
               containerPort: 27017
           volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/mongodb/security
             - name: mongos1
               mountPath: /data/db
           command: ["mongos"]
           resources:
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-          args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019", "--bind_ip_all"]
+              memory: "1024Mi"
+              cpu: "1000m"
+          args: ["--configdb", "cfgrs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
       volumes:
         - name: mongos1
           persistentVolumeClaim:
             claimName: mongos1
+        - name: secrets-volume
+          secret:
+            secretName: mongodb.key
+            defaultMode: 256
 
 ---
 apiVersion: v1
@@ -88,6 +103,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mongodb/mongos2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kubernete.worker1
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -108,6 +131,7 @@ metadata:
   labels:
     run: mongos2
 spec:
+  type: NodePort
   ports:
     - port: 27017
       protocol: TCP
@@ -131,7 +155,7 @@ spec:
         run: mongos2
     spec:
       restartPolicy: Always
-      hostname: mongos1
+      hostname: mongos2
       containers:
         - image: mongo:latest
           name: mongos2
@@ -139,18 +163,25 @@ spec:
             - name: mongos2
               containerPort: 27017
           volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/mongodb/security
             - name: mongos2
               mountPath: /data/db
           command: ["mongos"]
           resources:
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-          args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019", "--bind_ip_all"]
+              memory: "1024Mi"
+              cpu: "1000m"
+          args: ["--configdb", "cfgrs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
       volumes:
         - name: mongos2
           persistentVolumeClaim:
             claimName: mongos2
+        - name: secrets-volume
+          secret:
+            secretName: mongodb.key
+            defaultMode: 256
 
 ---
 apiVersion: v1
@@ -165,6 +196,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mongodb/mongos3
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kubernete.worker1
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -185,6 +224,7 @@ metadata:
   labels:
     run: mongos3
 spec:
+  type: NodePort
   ports:
     - port: 27017
       protocol: TCP
@@ -216,15 +256,22 @@ spec:
             - name: mongos3
               containerPort: 27017
           volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/mongodb/security
             - name: mongos3
               mountPath: /data/db
           command: ["mongos"]
           resources:
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-          args: ["--configdb", "cfgrs/mongocfg1:27019,mongocfg2:27019,mongocfg3:27019", "--bind_ip_all"]
+              memory: "1024Mi"
+              cpu: "1000m"
+          args: ["--configdb", "cfgrs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
       volumes:
         - name: mongos3
           persistentVolumeClaim:
             claimName: mongos3
+        - name: secrets-volume
+          secret:
+            secretName: mongodb.key
+            defaultMode: 256

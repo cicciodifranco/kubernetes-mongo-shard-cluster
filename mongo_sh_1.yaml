@@ -10,6 +10,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mongodb/mongosh1-1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kubernete.worker2
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -61,18 +69,25 @@ spec:
             - name: mongosh1-1
               containerPort: 27017
           volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/mongodb/security
             - name: mongosh1-1
               mountPath: /data/db
           command: ["mongod"]
+          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--auth", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
           resources:
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--bind_ip_all"]
+              memory: "1024Mi"
+              cpu: "1000m"
       volumes:
         - name: mongosh1-1
           persistentVolumeClaim:
             claimName: mongosh1-1
+        - name: secrets-volume
+          secret:
+            secretName: mongodb.key
+            defaultMode: 256
 
 ---
 apiVersion: v1
@@ -87,6 +102,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mongodb/mongosh1-2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kubernete.worker2
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -138,18 +161,25 @@ spec:
             - name: mongosh1-2
               containerPort: 27017
           volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/mongodb/security
             - name: mongosh1-2
               mountPath: /data/db
           command: ["mongod"]
+          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--auth", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
           resources:
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--bind_ip_all"]
+              memory: "1024Mi"
+              cpu: "1000m"
       volumes:
         - name: mongosh1-2
           persistentVolumeClaim:
             claimName: mongosh1-2
+        - name: secrets-volume
+          secret:
+            secretName: mongodb.key
+            defaultMode: 256
 
 ---
 apiVersion: v1
@@ -164,6 +194,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mongodb/mongosh1-3
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kubernete.worker2
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -215,15 +253,22 @@ spec:
             - name: mongosh1-3
               containerPort: 27017
           volumeMounts:
+            - name: secrets-volume
+              readOnly: true
+              mountPath: /etc/mongodb/security
             - name: mongosh1-3
               mountPath: /data/db
           command: ["mongod"]
+          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--auth", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
           resources:
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-          args: ["--shardsvr", "--replSet", "rs1", "--dbpath", "/data/db", "--port", "27017", "--bind_ip_all"]
+              memory: "1024Mi"
+              cpu: "1000m"
       volumes:
         - name: mongosh1-3
           persistentVolumeClaim:
             claimName: mongosh1-3
+        - name: secrets-volume
+          secret:
+            secretName: mongodb.key
+            defaultMode: 256

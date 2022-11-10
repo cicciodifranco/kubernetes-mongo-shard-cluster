@@ -4,7 +4,7 @@
 #Including config file
 source config
 echo -e "Deleting config nodes"
-kubectl delete -f  mongo_config.yaml
+kubectl delete -f mongo_config.yaml
 
 echo -e "\nDeleting shard nodes"
 for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
