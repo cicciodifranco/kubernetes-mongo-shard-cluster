@@ -2,8 +2,6 @@
 
 source config
 
-kubectl apply -f mongodb_pv.yaml
-
 #Creating config nodes
 kubectl apply -f  mongo_config.yaml
 
@@ -93,38 +91,38 @@ for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
   sleep 10
 done
 
-#Adding shard to cluster
-#Retriving pod name
-POD_NAME=$(kubectl get pods | grep "mongos2" | awk '{print $1;}')
-for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
-  echo -e "\n\n---------------------------------------------------"
-  echo "Adding rs$rs to cluster"
-  echo "Pod Name: $POD_NAME"
+# #Adding shard to cluster
+# #Retriving pod name
+# POD_NAME=$(kubectl get pods | grep "mongos2" | awk '{print $1;}')
+# for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
+#   echo -e "\n\n---------------------------------------------------"
+#   echo "Adding rs$rs to cluster"
+#   echo "Pod Name: $POD_NAME"
 
-  CMD="sh.addShard(\"rs$rs/mongosh$rs-1:27017\")"
-  #Executing cmd inside pod
-  echo $CMD
-  kubectl exec -it $POD_NAME -- bash -c "mongosh --eval '$CMD'"
+#   CMD="sh.addShard(\"rs$rs/mongosh$rs-1:27017\")"
+#   #Executing cmd inside pod
+#   echo $CMD
+#   kubectl exec -it $POD_NAME -- bash -c "mongosh --eval '$CMD'"
 
-  sleep 10
-done
+#   sleep 10
+# done
 
-#Adding shard to cluster
-#Retriving pod name
-POD_NAME=$(kubectl get pods | grep "mongos3" | awk '{print $1;}')
-for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
-  echo -e "\n\n---------------------------------------------------"
-  echo "Adding rs$rs to cluster"
-  echo "Pod Name: $POD_NAME"
+# #Adding shard to cluster
+# #Retriving pod name
+# POD_NAME=$(kubectl get pods | grep "mongos3" | awk '{print $1;}')
+# for ((rs=1; rs<=$SHARD_REPLICA_SET; rs++)) do
+#   echo -e "\n\n---------------------------------------------------"
+#   echo "Adding rs$rs to cluster"
+#   echo "Pod Name: $POD_NAME"
 
-  CMD="sh.addShard(\"rs$rs/mongosh$rs-1:27017\")"
-  #Executing cmd inside pod
-  echo $CMD
-  kubectl exec -it $POD_NAME -- bash -c "mongosh --eval '$CMD'"
+#   CMD="sh.addShard(\"rs$rs/mongosh$rs-1:27017\")"
+#   #Executing cmd inside pod
+#   echo $CMD
+#   kubectl exec -it $POD_NAME -- bash -c "mongosh --eval '$CMD'"
 
-  sleep 10
-done
+#   sleep 10
+# done
 
-kubectl exec -it $(kubectl get pods | grep "mongos1" | awk '{print $1;}') -- bash -c "mongosh --eval 'db.createUser({ user: \"aketoan\", pwd: \"@k3t0@ndotVN\", roles: [ \"root\" ]});'"
+kubectl exec -it $(kubectl get pods | grep "mongos1" | awk '{print $1;}') -- bash -c "mongosh --authenticationDatabase admin --eval 'use admin; db.createUser({ user: \"aketoan\", pwd: \"@k3t0@ndotVN\", roles: [ \"root\" ]});'"
 
 echo "All done!!!"

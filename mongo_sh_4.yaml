@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mongos1
+  name: mongosh4-1
 spec:
   capacity:
-    storage: 1Gi
+    storage: 8Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mongodb/mongos1
+    path: /mongodb/mongosh4-1
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -17,16 +17,16 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kubernete.worker1
+          - kubernete.worker4
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongos1
+  name: mongosh4-1
 spec:
   resources:
     requests:
-      storage: 1Gi
+      storage: 8Gi
   accessModes:
     - ReadWriteOnce # only allow one node can be read and write
   storageClassName: ""
@@ -34,58 +34,56 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongos1
+  name: mongosh4-1
   labels:
-    run: mongos1
+    run: mongosh4-1
 spec:
-  type: NodePort
   ports:
     - port: 27017
       protocol: TCP
-      nodePort: 30017
   selector:
-    run: mongos1
+    run: mongosh4-1
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongos1
+  name: mongosh4-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: mongos1
-  serviceName: mongos1
+      name: mongosh4-1
+  serviceName: mongosh4-1
   template:
     metadata:
       labels:
-        name: mongos1
-        run: mongos1
+        name: mongosh4-1
+        run: mongosh4-1
     spec:
       restartPolicy: Always
-      hostname: mongos1
+      hostname: mongosh4-1
       containers:
-        - image: mongo:latest
-          name: mongos1
+        - image: mongo:6.0.2
+          name: mongosh4-1
           ports:
-            - name: mongos1
+            - name: mongosh4-1
               containerPort: 27017
           volumeMounts:
             - name: secrets-volume
               readOnly: true
               mountPath: /etc/mongodb/security
-            - name: mongos1
+            - name: mongosh4-1
               mountPath: /data/db
-          command: ["mongos"]
+          command: ["mongod"]
+          args: ["--shardsvr", "--replSet", "rs4", "--dbpath", "/data/db", "--port", "27017", "--auth", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
           resources:
             limits:
               memory: "1024Mi"
               cpu: "1000m"
-          args: ["--configdb", "cfgrs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
       volumes:
-        - name: mongos1
+        - name: mongosh4-1
           persistentVolumeClaim:
-            claimName: mongos1
+            claimName: mongosh4-1
         - name: secrets-volume
           secret:
             secretName: mongodb.key
@@ -95,15 +93,15 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mongos2
+  name: mongosh4-2
 spec:
   capacity:
-    storage: 1Gi
+    storage: 8Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mongodb/mongos2
+    path: /mongodb/mongosh4-2
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -111,16 +109,16 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kubernete.worker1
+          - kubernete.worker4
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongos2
+  name: mongosh4-2
 spec:
   resources:
     requests:
-      storage: 1Gi
+      storage: 8Gi
   accessModes:
     - ReadWriteOnce # only allow one node can be read and write
   storageClassName: ""
@@ -128,58 +126,56 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongos2
+  name: mongosh4-2
   labels:
-    run: mongos2
+    run: mongosh4-2
 spec:
-  type: NodePort
   ports:
     - port: 27017
       protocol: TCP
-      nodePort: 30018
   selector:
-    run: mongos2
+    run: mongosh4-2
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongos2
+  name: mongosh4-2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: mongos2
-  serviceName: mongos2
+      name: mongosh4-2
+  serviceName: mongosh4-2
   template:
     metadata:
       labels:
-        name: mongos2
-        run: mongos2
+        name: mongosh4-2
+        run: mongosh4-2
     spec:
       restartPolicy: Always
-      hostname: mongos2
+      hostname: mongosh4-2
       containers:
-        - image: mongo:latest
-          name: mongos2
+        - image: mongo:6.0.2
+          name: mongosh4-2
           ports:
-            - name: mongos2
+            - name: mongosh4-2
               containerPort: 27017
           volumeMounts:
             - name: secrets-volume
               readOnly: true
               mountPath: /etc/mongodb/security
-            - name: mongos2
+            - name: mongosh4-2
               mountPath: /data/db
-          command: ["mongos"]
+          command: ["mongod"]
+          args: ["--shardsvr", "--replSet", "rs4", "--dbpath", "/data/db", "--port", "27017", "--auth", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
           resources:
             limits:
               memory: "1024Mi"
               cpu: "1000m"
-          args: ["--configdb", "cfgrs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
       volumes:
-        - name: mongos2
+        - name: mongosh4-2
           persistentVolumeClaim:
-            claimName: mongos2
+            claimName: mongosh4-2
         - name: secrets-volume
           secret:
             secretName: mongodb.key
@@ -189,15 +185,15 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mongos3
+  name: mongosh4-3
 spec:
   capacity:
-    storage: 1Gi
+    storage: 8Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mongodb/mongos3
+    path: /mongodb/mongosh4-3
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -205,16 +201,16 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kubernete.worker1
+          - kubernete.worker4
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongos3
+  name: mongosh4-3
 spec:
   resources:
     requests:
-      storage: 1Gi
+      storage: 8Gi
   accessModes:
     - ReadWriteOnce # only allow one node can be read and write
   storageClassName: ""
@@ -222,58 +218,56 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongos3
+  name: mongosh4-3
   labels:
-    run: mongos3
+    run: mongosh4-3
 spec:
-  type: NodePort
   ports:
     - port: 27017
       protocol: TCP
-      nodePort: 30019
   selector:
-    run: mongos3
+    run: mongosh4-3
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongos3
+  name: mongosh4-3
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: mongos3
-  serviceName: mongos3
+      name: mongosh4-3
+  serviceName: mongosh4-3
   template:
     metadata:
       labels:
-        name: mongos3
-        run: mongos3
+        name: mongosh4-3
+        run: mongosh4-3
     spec:
       restartPolicy: Always
-      hostname: mongos1
+      hostname: mongosh4-3
       containers:
-        - image: mongo:latest
-          name: mongos3
+        - image: mongo:6.0.2
+          name: mongosh4-3
           ports:
-            - name: mongos3
+            - name: mongosh4-3
               containerPort: 27017
           volumeMounts:
             - name: secrets-volume
               readOnly: true
               mountPath: /etc/mongodb/security
-            - name: mongos3
+            - name: mongosh4-3
               mountPath: /data/db
-          command: ["mongos"]
+          command: ["mongod"]
+          args: ["--shardsvr", "--replSet", "rs4", "--dbpath", "/data/db", "--port", "27017", "--auth", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
           resources:
             limits:
               memory: "1024Mi"
               cpu: "1000m"
-          args: ["--configdb", "cfgrs/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017", "--keyFile", "/etc/mongodb/security/mongodb.key", "--bind_ip_all"]
       volumes:
-        - name: mongos3
+        - name: mongosh4-3
           persistentVolumeClaim:
-            claimName: mongos3
+            claimName: mongosh4-3
         - name: secrets-volume
           secret:
             secretName: mongodb.key
