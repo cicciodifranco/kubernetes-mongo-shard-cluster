@@ -17,7 +17,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kubernete.worker1
+          - kubernete.worker4
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -205,7 +205,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kubernete.worker1
+          - kubernete.worker2
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
