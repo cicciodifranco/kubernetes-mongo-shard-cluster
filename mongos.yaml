@@ -65,11 +65,31 @@ spec:
       restartPolicy: Always
       hostname: mongos1
       containers:
-        - image: mongo:latest
+        - image: mongo:6.0.2
           name: mongos1
           ports:
             - name: mongos1
               containerPort: 27017
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+              failureThreshold: 3
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
             - name: secrets-volume
               readOnly: true
@@ -159,11 +179,31 @@ spec:
       restartPolicy: Always
       hostname: mongos2
       containers:
-        - image: mongo:latest
+        - image: mongo:6.0.2
           name: mongos2
           ports:
             - name: mongos2
               containerPort: 27017
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+              failureThreshold: 3
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
             - name: secrets-volume
               readOnly: true
@@ -253,11 +293,31 @@ spec:
       restartPolicy: Always
       hostname: mongos1
       containers:
-        - image: mongo:latest
+        - image: mongo:6.0.2
           name: mongos3
           ports:
             - name: mongos3
               containerPort: 27017
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+              failureThreshold: 3
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
             - name: secrets-volume
               readOnly: true

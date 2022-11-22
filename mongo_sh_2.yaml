@@ -68,6 +68,26 @@ spec:
           ports:
             - name: mongosh2-1
               containerPort: 27017
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+              failureThreshold: 3
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
             - name: secrets-volume
               readOnly: true
@@ -160,6 +180,26 @@ spec:
           ports:
             - name: mongosh2-2
               containerPort: 27017
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+              failureThreshold: 3
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
             - name: secrets-volume
               readOnly: true
@@ -252,6 +292,26 @@ spec:
           ports:
             - name: mongosh2-3
               containerPort: 27017
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+              failureThreshold: 3
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
             - name: secrets-volume
               readOnly: true
